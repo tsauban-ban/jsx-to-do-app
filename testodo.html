@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            margin-top: 50px;
+        }
+        .form-inline {
+            display: flex;
+            justify-content: space-between;
+        }
+        .form-control {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        .list-group-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn-check {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="container"></div>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/jsx">
+        const domNode = document.getElementById('app');
+        const root = ReactDOM.createRoot(domNode);
+
+        function Header(props){
+            return <h1>Welcome To Do App</h1>
+        }
+
+            function FormInput(props) {
+                return <form className="form-inline mb-3" onSubmit={props.handleSubmit}>
+                    <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Masukkan Aktifitas"
+                    value={props.activity}
+                    onChange={(e) => props.handleChange(e.target.value)}
+                    />
+                    <button type="submit" className="btn btn-primary">Tambah</button>
+                </form>;
+            }        
+            
+        function Content(props) {
+            return <ul className="list-group">
+                {props.list.map((item, index) => (
+                    <li key={index} className={`list-group-item ${item.checked ? 'checked' : ''}`}>
+                        <span>{item.text}</span>
+                        <div>
+                            <button
+                                className="btn btn-check btn-sm mr-2" onClick={() => props.handleCheck(index)} disabled={item.checked}>Check</button>
+                            <button className="btn btn-delete btn-sm" onClick={() => props.handleDelete(index)}>Delete</button>
+                        </div>
+                    </li>
+                ))}
+            </ul>;
+        }
+
+        function TodoApp() {
+            const [activity, setActivity] = React.useState("");
+            const [list, setList] = React.useState([]);
+
+            function handleChange(value) {
+                setActivity(value);
+            }
+
+            function handleSubmit(e) {
+                e.preventDefault();
+                setList([...list, { text: activity, checked: false }]);
+                setActivity("");
+            }
+
+            function handleCheck(index) {
+                const newList = [...list];
+                newList[index].checked = true;
+                newList[index].text = `✔️ ${newList[index].text}`;
+                setList(newList);
+            }
+
+            function handleDelete(index) {
+                const newList = list.filter((_, i) => i !== index);
+                setList(newList);
+            }
+
+            return <>
+                <Header/>
+                <div class="container">
+                        <FormInput handleChange={handleChange} handleSubmit={handleSubmit} activity={activity} />
+                </div>
+                <Content list={list} handleCheck={handleCheck} handleDelete={handleDelete} />
+            </>;
+        }
+
+        root.render(<TodoApp />);
+    </script>
+</body>
+</html>
